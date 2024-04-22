@@ -5,9 +5,11 @@ namespace PUNDERO.Models;
 
 public partial class VehicleDriver
 {
-    public int IdVehicle { get; set; }
+    public int IdVehicleDriver { get; set; }
 
-    public int IdDriver { get; set; }
+    public int? IdVehicle { get; set; }
+
+    public int? IdDriver { get; set; }
 
     public DateTime AssignmentStartDate { get; set; }
 
@@ -17,7 +19,7 @@ public partial class VehicleDriver
 
     public virtual AssignmentType? IdAssignmentTypeNavigation { get; set; }
 
-    public virtual Driver IdDriverNavigation { get; set; } = null!;
+    public virtual Driver? IdDriverNavigation { get; set; }
 
-    public virtual Vehicle IdVehicleNavigation { get; set; } = null!;
+    public virtual Vehicle? IdVehicleNavigation { get; set; }
 }

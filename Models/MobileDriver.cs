@@ -9,7 +9,7 @@ public partial class MobileDriver
 
     public DateTime AssignmentStartDate { get; set; }
 
-    public DateTime AssignmentEndDate { get; set; }
+    public DateTime? AssignmentEndDate { get; set; }
 
     public int? IdDriver { get; set; }
 

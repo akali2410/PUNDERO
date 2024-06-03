@@ -146,7 +146,7 @@ namespace PUNDERO.Controllers
                     IdStatus = i.IdStatus,
                     StoreName = i.IdStoreNavigation.Name,
                     WarehouseName = i.IdWarehouseNavigation.NameWarehouse,
-                    IssueDate = i.IssueDate
+                    IssueDate = i.IssueDate                   
                 })
                 .ToList();
 

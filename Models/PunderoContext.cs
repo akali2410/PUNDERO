@@ -205,6 +205,10 @@ public partial class PunderoContext : DbContext
             entity.Property(e => e.IssueDate)
                 .HasColumnType("datetime")
                 .HasColumnName("ISSUE_DATE");
+            entity.Property(e => e.Note)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("NOTE");
 
             entity.HasOne(d => d.IdDriverNavigation).WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.IdDriver)

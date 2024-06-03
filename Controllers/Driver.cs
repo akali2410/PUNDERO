@@ -71,7 +71,7 @@ namespace PUNDERO.Controllers
 
 
 
-        [HttpGet("GetDriversWithName")]
+        [HttpGet]
         public async Task<IActionResult> GetDriversWithName()
         {
             var drivers = await _context.Drivers

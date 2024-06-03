@@ -17,6 +17,8 @@ public partial class Invoice
 
     public int? IdDriver { get; set; }
 
+    public string? Note { get; set; }
+
     public virtual Driver? IdDriverNavigation { get; set; }
 
     public virtual InvoiceStatus? IdStatusNavigation { get; set; }

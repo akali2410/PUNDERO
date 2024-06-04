@@ -25,9 +25,18 @@ namespace PUNDERO.Controllers
             public int? IdStatus { get; set; }
             public string StoreName { get; set; }
             public string WarehouseName { get; set; }
+
+            public List<ProductDto> Products { get; set; }
+            public string Product { get; set; }
             public DateTime IssueDate { get; set; }
             public double StoreLatitude { get; set; }
             public double StoreLongitude { get; set; }
+        }
+
+        public class ProductDto
+        {
+            public string ProductName { get; set; }
+            public int Quantity { get; set; }
         }
 
 
@@ -104,24 +113,33 @@ namespace PUNDERO.Controllers
             return Ok(invoice);
         }
         [HttpGet("{driverId}")]
-        
+
         public IActionResult GetApprovedInvoicesForDriver(int driverId)
         {
             var invoices = _context.Invoices
-                .Include(i => i.IdStatusNavigation)
-                .Include(i => i.IdStoreNavigation)
-                .Include(i => i.IdWarehouseNavigation)
-                .Where(i => i.IdDriver == driverId && i.IdStatus == 2) // Only approved invoices
-                .Select(i => new InvoiceDto
-                {
-                    IdInvoice = i.IdInvoice,
-                    IdDriver = i.IdDriver,
-                    IdStatus = i.IdStatus,
-                    StoreName = i.IdStoreNavigation.Name,
-                    WarehouseName = i.IdWarehouseNavigation.NameWarehouse,
-                    IssueDate = i.IssueDate
-                })
-                .ToList();
+       .Include(i => i.IdStatusNavigation)
+       .Include(i => i.IdStoreNavigation)
+       .Include(i => i.IdWarehouseNavigation)
+       .Include(i => i.InvoiceProducts)
+           .ThenInclude(ip => ip.IdProductNavigation)
+       .Where(i => i.IdDriver == driverId && i.IdStatus == 2) // Only approved invoices
+       .Select(i => new InvoiceDto
+       {
+           IdInvoice = i.IdInvoice,
+           IdDriver = i.IdDriver,
+           IdStatus = i.IdStatus,
+           StoreName = i.IdStoreNavigation.Name,
+           WarehouseName = i.IdWarehouseNavigation.NameWarehouse,
+           IssueDate = i.IssueDate,
+           StoreLatitude = i.IdStoreNavigation.Latitude,
+           StoreLongitude = i.IdStoreNavigation.Longitude,
+           Products = i.InvoiceProducts.Select(ip => new ProductDto
+           {
+               ProductName = ip.IdProductNavigation.NameProduct,
+               Quantity = ip.OrderQuantity
+           }).ToList()
+       })
+       .ToList();
 
             if (!invoices.Any())
             {
@@ -131,7 +149,7 @@ namespace PUNDERO.Controllers
             return Ok(invoices);
         }
 
-        [HttpGet]
+            [HttpGet]
         public IActionResult GetDeliveredInvoicesForClient(int driverId)
         {
             var invoices = _context.Invoices
@@ -161,22 +179,29 @@ namespace PUNDERO.Controllers
         public IActionResult GetInTransitInvoicesForDriver(int driverId)
         {
             var invoices = _context.Invoices
-                .Include(i => i.IdStatusNavigation)
-                .Include(i => i.IdStoreNavigation)
-                .Include(i => i.IdWarehouseNavigation)
-                .Where(i => i.IdDriver == driverId && i.IdStatus == 4) // Only In Transit invoices
-                .Select(i => new InvoiceDto
-                {
-                    IdInvoice = i.IdInvoice,
-                    IdDriver = i.IdDriver,
-                    IdStatus = i.IdStatus,
-                    StoreName = i.IdStoreNavigation.Name,
-                    WarehouseName = i.IdWarehouseNavigation.NameWarehouse,
-                    IssueDate = i.IssueDate,
-                    StoreLatitude = i.IdStoreNavigation.Latitude,
-                    StoreLongitude = i.IdStoreNavigation.Longitude
-                })
-                .ToList();
+         .Include(i => i.IdStatusNavigation)
+         .Include(i => i.IdStoreNavigation)
+         .Include(i => i.IdWarehouseNavigation)
+         .Include(i => i.InvoiceProducts) // Include InvoiceProducts
+         .ThenInclude(ip => ip.IdProductNavigation) // Include Product details
+         .Where(i => i.IdDriver == driverId && i.IdStatus == 4) // Only In Transit invoices
+         .Select(i => new InvoiceDto
+         {
+             IdInvoice = i.IdInvoice,
+             IdDriver = i.IdDriver,
+             IdStatus = i.IdStatus,
+             StoreName = i.IdStoreNavigation.Name,
+             WarehouseName = i.IdWarehouseNavigation.NameWarehouse,
+             IssueDate = i.IssueDate,
+             StoreLatitude = i.IdStoreNavigation.Latitude,
+             StoreLongitude = i.IdStoreNavigation.Longitude,
+             Products = i.InvoiceProducts.Select(ip => new ProductDto
+             {
+                 ProductName = ip.IdProductNavigation.NameProduct,
+                 Quantity = ip.OrderQuantity
+             }).ToList()
+         })
+         .ToList();
 
             if (!invoices.Any())
             {
